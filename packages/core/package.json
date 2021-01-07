@@ -1,6 +1,6 @@
 {
   "name": "@zjw-cli/core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "zjw-cli core",
   "author": "zhoujiawei <18720989328@163.com>",
   "homepage": "",
@@ -20,7 +20,7 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@zjw-cli/utils": "^1.0.1"
+    "@zjw-cli/utils": "^1.0.2"
   },
   "gitHead": "fb94b28e52b136630ab42418e7ef6a4bb729f291",
   "publishConfig": {
