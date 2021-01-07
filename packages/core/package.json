@@ -1,0 +1,22 @@
+{
+  "name": "@zjw-cli/core",
+  "version": "1.0.0",
+  "description": "zjw-cli core",
+  "author": "zhoujiawei <18720989328@163.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/core.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "@zjw-cli/utils": "^1.0.0"
+  }
+}
