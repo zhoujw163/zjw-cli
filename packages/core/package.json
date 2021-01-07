@@ -17,10 +17,10 @@
     "lib"
   ],
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "echo \"run core test\""
   },
   "dependencies": {
-    "@zjw-cli/utils": "^1.0.2"
+    "@zjw-cli/utils": "file:../utils"
   },
   "gitHead": "fb94b28e52b136630ab42418e7ef6a4bb729f291",
   "publishConfig": {

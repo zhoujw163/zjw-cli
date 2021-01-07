@@ -14,7 +14,7 @@
     "lib"
   ],
   "scripts": {
-    "test": "echo \"run core test\""
+    "test": "echo \"run utils test\""
   },
   "dependencies": {
     "npmlog": "^4.1.2"
