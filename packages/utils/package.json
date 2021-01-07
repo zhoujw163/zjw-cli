@@ -1,6 +1,6 @@
 {
   "name": "@zjw-cli/utils",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "> zjw-cli utils",
   "author": "zhoujiawei <18720989328@163.com>",
   "homepage": "",
@@ -18,5 +18,9 @@
   },
   "dependencies": {
     "npmlog": "^4.1.2"
+  },
+  "gitHead": "fb94b28e52b136630ab42418e7ef6a4bb729f291",
+  "publishConfig": {
+    "access": "public"
   }
 }
