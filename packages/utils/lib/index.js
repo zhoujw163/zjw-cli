@@ -3,5 +3,5 @@
 module.exports = utils;
 
 function utils() {
-    // TODO
+    require('npmlog').info('zjw-cli-utils', 'hello zjw-cli');
 }
