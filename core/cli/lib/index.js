@@ -4,7 +4,7 @@ const path = require('path');
 const semver = require('semver');
 const colors = require('colors/safe');
 const userHome = require('user-home');
-const pathExists = require('path-exists');
+const pathExists = require('path-exists').sync;
 const log = require('@zjw-cli/log');
 
 const pkg = require('../package.json');
