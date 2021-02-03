@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@zjw-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "@zjw-cli/init": "file:../../commands/init",
     "@zjw-cli/log": "file:../../utils/log",
     "@zjw-cli/utils": "file:../../utils/utils",
     "colors": "^1.4.0",

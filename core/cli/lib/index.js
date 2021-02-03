@@ -7,6 +7,7 @@ const userHome = require('user-home');
 const pathExists = require('path-exists').sync;
 const commander = require('commander')
 const log = require('@zjw-cli/log');
+const init = require('@zjw-cli/init');
 
 const pkg = require('../package.json');
 const constant = require('./const');
@@ -129,9 +130,7 @@ function registerCommand() {
         .command('init [projectName]')
         .description('创建项目')
         .option('-f, --force', '是否强制创建项目', false)
-        .action((projectName, cmdObj) => {
-            console.log(projectName, cmdObj)
-        });
+        .action(init);
 
     // 监听未知命令
     program.on('command:*', (obj) => {
