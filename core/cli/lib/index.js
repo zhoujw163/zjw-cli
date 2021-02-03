@@ -5,6 +5,7 @@ const semver = require('semver');
 const colors = require('colors/safe');
 const userHome = require('user-home');
 const pathExists = require('path-exists').sync;
+const commander = require('commander')
 const log = require('@zjw-cli/log');
 
 const pkg = require('../package.json');
@@ -16,10 +17,11 @@ async function core() {
         checkNodeVersion();
         checkRoot();
         checkUserHome();
-        checkInputArgs();
-        log.verbose('debug', 'test debug modal');
+        // checkInputArgs();
+        // log.verbose('debug', 'test debug modal');
         checkEnv();
         await checkGlobalUpdate();
+        registerCommand();
     } catch (error) {
         log.error(error.message)
     }
@@ -102,6 +104,48 @@ async function checkGlobalUpdate() {
         throw new Error(colors.red(`请升级版本，最新版本：${lastVersion}，升级命令：npm i ${pkg.name} -g`));
     }
 
+}
+
+function registerCommand() {
+    const program = new commander.Command();
+    // 获取命令行 option
+    const opts = program.opts();
+
+    program
+        .name(Object.keys(pkg.bin)[0])
+        .version(pkg.version)
+        .usage('<command> [option]')
+        .option('-d, --debug', '开启本地调试', false);
+
+    // 开启 debug 模式
+    program.on('option:debug', () => {
+        process.env.LOG_LEVEL = opts.debug ? 'verbose' : 'info';
+        log.level = process.env.LOG_LEVEL;
+        log.verbose('start debug modal')
+    });
+
+    // 注册 init 命令
+    program
+        .command('init [projectName]')
+        .description('创建项目')
+        .option('-f, --force', '是否强制创建项目', false)
+        .action((projectName, cmdObj) => {
+            console.log(projectName, cmdObj)
+        });
+
+    // 监听未知命令
+    program.on('command:*', (obj) => {
+        const availableCommands = program.commands.map(cmd => cmd.name());
+        log.info(colors.red(`未知命令：${obj[0]}`));
+        availableCommands.length && log.info(colors.green(`可用命令：${availableCommands.join(', ')}`));
+    })
+
+    program.parse(process.argv);
+
+    if (program.args && program.args.length < 1) {
+        program.outputHelp();
+        console.log();
+    }
 }
 
 module.exports = core;
