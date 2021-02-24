@@ -28,5 +28,8 @@
   },
   "dependencies": {
     "npmlog": "^4.1.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

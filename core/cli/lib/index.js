@@ -8,7 +8,7 @@ const pathExists = require('path-exists').sync;
 const commander = require('commander')
 const log = require('@zjw-cli/log');
 const init = require('@zjw-cli/init');
-
+const exec = require('@zjw-cli/exec');
 const pkg = require('../package.json');
 const constant = require('./const');
 
@@ -134,7 +134,6 @@ function registerCommand() {
         // 相同的道理，addCommander 注册的二级命令也是一样的处理方法
 
     program.on('option:targetPath', (targetPath) => {
-        console.log('targetPath: ', targetPath);
         process.env.CLI_TARGET_PATH = targetPath; // 或者通过 program.opts() 获取
     })
 
