@@ -14,18 +14,20 @@ const constant = require('./const');
 
 async function core() {
     try {
-        checkVersion();
-        checkNodeVersion();
-        checkRoot();
-        checkUserHome();
-        // checkInputArgs();
-        // log.verbose('debug', 'test debug modal');
-        checkEnv();
-        await checkGlobalUpdate();
+        await prepare();
         registerCommand();
     } catch (error) {
         log.error(error.message)
     }
+}
+
+async function prepare() {
+    checkVersion();
+    checkNodeVersion();
+    checkRoot();
+    checkUserHome();
+    checkEnv();
+    await checkGlobalUpdate();
 }
 
 /**
@@ -64,27 +66,13 @@ function checkUserHome() {
 }
 
 /**
- * @description 检查入参
+ * @description 检查环境变量
  */
-function checkInputArgs() {
-    const args = require('minimist')(process.argv.slice(2));
-    checkArgs(args)
-}
-
-/**
- * @description 更加入参动态修改 log level，开启 debug 模式
- * @param {Object} args 
- */
-function checkArgs(args) {
-    log.level = args.debug ? 'verbose' : 'info';
-}
-
 function checkEnv() {
     const dotenvPath = path.resolve(userHome, '.env')
     // 读取 .env 文件中的数据，并配置到环境变量中
     require('dotenv').config({ path: dotenvPath });
     createDefaultConfig();
-    log.verbose('环境变量缓存文件路径', process.env.CLI_HOME_PATH)
 }
 
 /**
@@ -98,6 +86,9 @@ function createDefaultConfig() {
     process.env.CLI_HOME_PATH = cliConfig.cliHomePath;
 }
 
+/**
+ * @description 检查新版本
+ */
 async function checkGlobalUpdate() {
     const { getNpmSemverVersion } = require('@zjw-cli/get-npm-info');
     const lastVersion = await getNpmSemverVersion(pkg.version, pkg.name);
@@ -116,7 +107,8 @@ function registerCommand() {
         .name(Object.keys(pkg.bin)[0])
         .version(pkg.version)
         .usage('<command> [option]')
-        .option('-d, --debug', '开启本地调试', false);
+        .option('-d, --debug', '开启本地调试', false)
+        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
 
     // 开启 debug 模式
     program.on('option:debug', () => {
@@ -130,7 +122,21 @@ function registerCommand() {
         .command('init [projectName]')
         .description('创建项目')
         .option('-f, --force', '是否强制创建项目', false)
-        .action(init);
+        .action(init)
+        // 动态加载的 init action 是无法获取全局 opts 的，可以通过以下两种方法
+        // 方法一：脚手架中通过 program.opts() 来获取全局 opts，再传递给 init action
+        // .action((projectName, cmdObj) => {
+        //     console.log('projectName, cmdObj: ', projectName, cmdObj, opts);
+        //     init(projectName, cmdObj, opts);
+        // });
+
+        // 方法二： 通过 on 监听 option，将需要使用的 option值存储在环境变量中，因为参数解析是优先执行的
+        // 相同的道理，addCommander 注册的二级命令也是一样的处理方法
+
+    program.on('option:targetPath', (targetPath) => {
+        console.log('targetPath: ', targetPath);
+        process.env.CLI_TARGET_PATH = targetPath; // 或者通过 program.opts() 获取
+    })
 
     // 监听未知命令
     program.on('command:*', (obj) => {
