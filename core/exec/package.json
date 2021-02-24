@@ -1,0 +1,29 @@
+{
+  "name": "@zjw-cli/exec",
+  "version": "1.0.0",
+  "description": "zjw-cli execute package",
+  "author": "jiawei-zhou <1227364071@qq.com>",
+  "homepage": "https://github.com/zhoujw163/zjw-cli#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhoujw163/zjw-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/zhoujw163/zjw-cli/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
