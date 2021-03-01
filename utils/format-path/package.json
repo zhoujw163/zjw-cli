@@ -1,7 +1,7 @@
 {
-  "name": "@zjw-cli/exec",
+  "name": "@zjw-cli/format-path",
   "version": "1.0.0",
-  "description": "zjw-cli execute package",
+  "description": "format path",
   "author": "jiawei-zhou <1227364071@qq.com>",
   "homepage": "https://github.com/zhoujw163/zjw-cli#readme",
   "license": "ISC",
@@ -13,6 +13,9 @@
   "files": [
     "lib"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npm.taobao.org/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zhoujw163/zjw-cli.git"
@@ -20,14 +23,7 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
-  "dependencies": {
-    "@zjw-cli/package": "file:../../models/package",
-    "@zjw-cli/log": "file:../../utils/log"
-  },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

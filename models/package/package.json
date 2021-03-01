@@ -1,7 +1,7 @@
 {
-  "name": "@zjw-cli/exec",
+  "name": "@zjw-cli/package",
   "version": "1.0.0",
-  "description": "zjw-cli execute package",
+  "description": "zjw-cli npm module",
   "author": "jiawei-zhou <1227364071@qq.com>",
   "homepage": "https://github.com/zhoujw163/zjw-cli#readme",
   "license": "ISC",
@@ -21,8 +21,11 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@zjw-cli/package": "file:../../models/package",
-    "@zjw-cli/log": "file:../../utils/log"
+    "@zjw-cli/format-path": "file:../../utils/format-path",
+    "@zjw-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "@zjw-cli/utils": "file:../../utils/utils",
+    "npminstall": "^4.10.0",
+    "pkg-dir": "^5.0.0"
   },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"

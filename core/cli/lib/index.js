@@ -7,17 +7,23 @@ const userHome = require('user-home');
 const pathExists = require('path-exists').sync;
 const commander = require('commander')
 const log = require('@zjw-cli/log');
-const init = require('@zjw-cli/init');
+// const init = require('@zjw-cli/init');
 const exec = require('@zjw-cli/exec');
 const pkg = require('../package.json');
 const constant = require('./const');
+
+const program = new commander.Command();
 
 async function core() {
     try {
         await prepare();
         registerCommand();
     } catch (error) {
-        log.error(error.message)
+        log.error(error.message);
+        const opts = program.opts();
+        if (opts.debug) {
+            console.log(error);
+        }
     }
 }
 
@@ -99,7 +105,6 @@ async function checkGlobalUpdate() {
 }
 
 function registerCommand() {
-    const program = new commander.Command();
     // 获取命令行 option
     const opts = program.opts();
 
@@ -122,7 +127,7 @@ function registerCommand() {
         .command('init [projectName]')
         .description('创建项目')
         .option('-f, --force', '是否强制创建项目', false)
-        .action(init)
+        .action(exec)
         // 动态加载的 init action 是无法获取全局 opts 的，可以通过以下两种方法
         // 方法一：脚手架中通过 program.opts() 来获取全局 opts，再传递给 init action
         // .action((projectName, cmdObj) => {

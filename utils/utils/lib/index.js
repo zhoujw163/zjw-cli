@@ -1,7 +1,9 @@
 'use strict';
 
-module.exports = utils;
-
-function utils() {
-    require('npmlog').info('zjw-cli-utils', 'hello zjw-cli1');
+function isObject(o) {
+    return Object.prototype.toString.call(o) === '[object Object]';
 }
+
+module.exports = {
+    isObject
+};
