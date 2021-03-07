@@ -5,14 +5,14 @@ const urlJoin = require('url-join');
 const semver = require('semver');
 
 // 优先调用淘宝源
-function getRegistry(isOriginal = false) {
+function getDefaultRegistry(isOriginal = false) {
     return isOriginal ? 'https://registry.npmjs.org/' : 'https://registry.npm.taobao.org/';
 }
 
 function getNpmInfo(npmName, registry) {
     if (!npmName) return null;
-    const targetRegistry = registry || getRegistry();
-    const url = urlJoin(targetRegistry, npmName);
+    const targetDefaultRegistry = registry || getDefaultRegistry();
+    const url = urlJoin(targetDefaultRegistry, npmName);
     return axios.get(url).then(res => {
         if (res.status === 200) {
             return res.data;
@@ -39,10 +39,16 @@ async function getNpmSemverVersion(baseVersion, npmName, registry) {
     return newVersions[0];
 }
 
+async function getNpmLatestVersion(npmName, registry) {
+    const versions = await getVersions(npmName, registry);
+    return versions.sort((a, b) => semver.gt(b, a) ? 1 : -1)[0];
+}
+
 module.exports = {
     getNpmInfo,
     getVersions,
     getSemverVersions,
     getNpmSemverVersion,
-    getRegistry
+    getDefaultRegistry,
+    getNpmLatestVersion
 };
