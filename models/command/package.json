@@ -1,8 +1,8 @@
 {
-  "name": "@zjw-cli/init",
+  "name": "@zjw-cl/command",
   "version": "1.0.0",
-  "description": "zjw-cli init",
-  "author": "zhoujiawei <zhoujiawei@nayuan.net>",
+  "description": "commamd",
+  "author": "jiawei-zhou <1227364071@qq.com>",
   "homepage": "https://github.com/zhoujw163/zjw-cli#readme",
   "license": "ISC",
   "main": "lib/index.js",
@@ -24,7 +24,9 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@zjw-cli/command": "file:../../models/command"
+    "@zjw-cli/log": "file:../../utils/log",
+    "colors": "^1.4.0",
+    "semver": "^7.3.4"
   },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"

@@ -7,7 +7,6 @@ const userHome = require('user-home');
 const pathExists = require('path-exists').sync;
 const commander = require('commander')
 const log = require('@zjw-cli/log');
-// const init = require('@zjw-cli/init');
 const exec = require('@zjw-cli/exec');
 const pkg = require('../package.json');
 const constant = require('./const');
@@ -29,7 +28,6 @@ async function core() {
 
 async function prepare() {
     checkVersion();
-    checkNodeVersion();
     checkRoot();
     checkUserHome();
     checkEnv();
@@ -41,17 +39,6 @@ async function prepare() {
  */
 function checkVersion() {
     log.notice('cli', pkg.version);
-}
-
-/**
- * @description 检查 node 版本，处理低版本 node 不兼容，提示用户升级 node
- */
-function checkNodeVersion() {
-    const currentVersion = process.version;
-    const lowestVersion = constant.LOWEST_NODE_VERSION;
-    if (!semver.gte(currentVersion, lowestVersion)) {
-        throw new Error(colors.red(`当前 node 版本：${currentVersion}，最低 node 版本：${lowestVersion}，请升级 node`));
-    }
 }
 
 /**
@@ -138,9 +125,11 @@ function registerCommand() {
         // 方法二： 通过 on 监听 option，将需要使用的 option值存储在环境变量中，因为参数解析是优先执行的
         // 相同的道理，addCommander 注册的二级命令也是一样的处理方法
 
+        // 方法三： 通过 arguments 获取，exec 函数参数为 name：命令参数， option： 命令选项， command：命令对象
+
     program.on('option:targetPath', (targetPath) => {
         process.env.CLI_TARGET_PATH = targetPath; // 或者通过 program.opts() 获取
-    })
+    });
 
     // 监听未知命令
     program.on('command:*', (obj) => {
