@@ -24,7 +24,15 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@zjw-cli/command": "file:../../models/command"
+    "@zjw-cli/command": "file:../../models/command",
+    "@zjw-cli/log": "file:../../utils/log",
+    "@zjw-cli/package": "file:../../models/package",
+    "@zjw-cli/utils": "file:../../utils/utils",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.3.3",
+    "semver": "^7.3.4",
+    "spinner": "^0.3.4",
+    "user-home": "^2.0.0"
   },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"

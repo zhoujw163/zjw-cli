@@ -7,8 +7,8 @@ const log = require('@zjw-cli/log');
 
 // 手动维护一张配置表，根据命令获取 package name，也可以在服务端配置通过接口请求方式获取。
 const SETTINGS = {
-    // init: '@zjw-cli/init'
-    init: '@imooc-cli/init'
+    init: '@zjw-cli/init'
+    // init: '@imooc-cli/init'
 };
 
 const CACHE_DIR = 'dependencies';
