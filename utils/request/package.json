@@ -1,8 +1,8 @@
 {
-  "name": "@zjw-cli/init",
+  "name": "@zjw-cli/request",
   "version": "1.0.0",
-  "description": "zjw-cli init",
-  "author": "zhoujiawei <zhoujiawei@nayuan.net>",
+  "description": "> TODO: description",
+  "author": "jiawei-zhou <1227364071@qq.com>",
   "homepage": "https://github.com/zhoujw163/zjw-cli#readme",
   "license": "ISC",
   "main": "lib/index.js",
@@ -23,19 +23,10 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
-  "dependencies": {
-    "@zjw-cli/command": "file:../../models/command",
-    "@zjw-cli/log": "file:../../utils/log",
-    "@zjw-cli/package": "file:../../models/package",
-    "@zjw-cli/request": "file:../../utils/request",
-    "@zjw-cli/utils": "file:../../utils/utils",
-    "fs-extra": "^9.0.1",
-    "inquirer": "^7.3.3",
-    "semver": "^7.3.4",
-    "spinner": "^0.3.4",
-    "user-home": "^2.0.0"
-  },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
   }
 }

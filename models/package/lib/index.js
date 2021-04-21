@@ -101,6 +101,7 @@ class Package {
         function _getRootFile(targetPath) {
             // 1. 获取package.json所在目录
             const dir = pkgDir(targetPath);
+            // const dir = pkgDir('C:\Users\Administrator\Desktop\zjw-cli\commands\init')
             if (dir) {
                 // 2. 读取package.json
                 const pkgFile = require(path.resolve(dir, 'package.json'));

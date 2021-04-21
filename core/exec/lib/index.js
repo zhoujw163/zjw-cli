@@ -55,6 +55,7 @@ async function exec() {
 
     // 获取 init 模块的入口路径，然后加载模块进行执行
     const rootFile = pkg.getRootFilePath();
+    
     // 使用 apply 方法将 arguments 转换成参数列表形式
     if (rootFile) {
         try {

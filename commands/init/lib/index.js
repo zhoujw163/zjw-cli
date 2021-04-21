@@ -10,6 +10,8 @@ const Command = require('@zjw-cli/command');
 const Package = require('@zjw-cli/package');
 const log = require('@zjw-cli/log');
 
+const getProjectTemplate = require('./getProjectTemplate');
+
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
 
@@ -25,16 +27,34 @@ class InitCommand extends Command {
         try {
             // 1. 准备阶段
             const projectInfo = await this.prepare();
-            console.log(projectInfo)
-            // 2. 下载模板
-            // 3. 安装模板
+            if (projectInfo) {
+                log.verbose('projectInfo：', projectInfo);
+                // 2. 下载模板
+                this.projectInfo = projectInfo;
+                this.downloadTemplate();
+                // 3. 安装模板
+            }
         } catch (e) {
             log.error(e.message);
         }
     }
 
+    downloadTemplate () {
+        //  1 通过项目模板API获取项目模板信息
+        // 1.1 通过egg.js搭建一套后台系统
+        // 1.2 通过npm存储项目模板(vue-cli/vue-element-admin)
+        // 1.3 将项目模板信息存储到mongodb数据库中
+        // 1.4 通过egg.js获取Mongodb中的数据并且通过API返回
+    }
+
     // 执行命令前的准备阶段
     async prepare() {
+        // 0. 判断模板是否存在
+        const template = await getProjectTemplate()
+        if (!template || template.length === 0) {
+            throw new Error('项目模板不存在');
+        }
+        this.template = template;
         // 1. 判断当前目录是否为空
         const localPath = process.cwd();
         if (!this.isDirEmpty(localPath)) {
@@ -139,6 +159,12 @@ class InitCommand extends Command {
                             return v;
                         }
                     }
+                },
+                {
+                    type: 'list',
+                    name: 'projectTemplate',
+                    message: '请选择项目模板',
+                    choices: this.createTemplateChoices()
                 }
             ]);
             projectInfo = { type,  ...project };
@@ -154,6 +180,13 @@ class InitCommand extends Command {
             file => !file.startsWith('.') && ['node_modules'].indexOf(file) < 0
         );
         return !fileList || fileList.length <= 0;
+    }
+
+    createTemplateChoices() {
+        return this.template.map(item => ({
+            value: item.npmName,
+            name: item.name,
+        }))
     }
 }
 
