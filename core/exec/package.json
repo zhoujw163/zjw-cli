@@ -21,8 +21,8 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@zjw-cli/package": "file:../../models/package",
-    "@zjw-cli/log": "file:../../utils/log"
+    "@zjw-cli/log": "file:../../utils/log",
+    "@zjw-cli/package": "file:../../models/package"
   },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"

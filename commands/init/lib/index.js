@@ -9,6 +9,7 @@ const userHome = require('user-home');
 const Command = require('@zjw-cli/command');
 const Package = require('@zjw-cli/package');
 const log = require('@zjw-cli/log');
+const { spinnerStart, sleep } = require('@zjw-cli/utils');
 
 const getProjectTemplate = require('./getProjectTemplate');
 
@@ -31,7 +32,7 @@ class InitCommand extends Command {
                 log.verbose('projectInfo：', projectInfo);
                 // 2. 下载模板
                 this.projectInfo = projectInfo;
-                this.downloadTemplate();
+                await this.downloadTemplate();
                 // 3. 安装模板
             }
         } catch (e) {
@@ -39,18 +40,48 @@ class InitCommand extends Command {
         }
     }
 
-    downloadTemplate () {
-        //  1 通过项目模板API获取项目模板信息
-        // 1.1 通过egg.js搭建一套后台系统
-        // 1.2 通过npm存储项目模板(vue-cli/vue-element-admin)
-        // 1.3 将项目模板信息存储到mongodb数据库中
-        // 1.4 通过egg.js获取Mongodb中的数据并且通过API返回
+    async downloadTemplate() {
+        console.log(this.template, this.projectInfo);
+        const { projectTemplate } = this.projectInfo;
+        const templateInfo = this.template.find(item => item.npmName === projectTemplate);
+        const targetPath = path.resolve(userHome, '.zjw-cli', 'template');
+        const storeDir = path.resolve(userHome, '.zjw-cli', 'template', 'node_modules');
+        const { npmName, version } = templateInfo;
+        const templateNpm = new Package({
+            targetPath,
+            storeDir,
+            packageName: npmName,
+            packageVersion: version
+        });
+        if (!await templateNpm.exists()) {
+            const spinner = spinnerStart('正在下载模板...');
+            await sleep();
+            try {
+                await templateNpm.install();
+                log.success('下载模板成功');
+            } catch (e) {
+                throw e;
+            } finally {
+                spinner.stop(true);
+            }
+        } else {
+            const spinner = spinnerStart('正在更新模板...');
+            await sleep();
+            try {
+                await templateNpm.update();
+                log.success('更新模板成功');
+            } catch (e) {
+                throw e;
+            } finally {
+                spinner.stop(true);
+            }
+        }
     }
 
     // 执行命令前的准备阶段
     async prepare() {
         // 0. 判断模板是否存在
-        const template = await getProjectTemplate()
+        const template = await getProjectTemplate();
         if (!template || template.length === 0) {
             throw new Error('项目模板不存在');
         }
@@ -126,7 +157,11 @@ class InitCommand extends Command {
                             // 1.首字符必须为英文字符
                             // 2.尾字符必须为英文或数字，不能为字符
                             // 3.字符仅允许"-_"
-                            if (!/^[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(v)) {
+                            if (
+                                !/^[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(
+                                    v
+                                )
+                            ) {
                                 done('请输入合法的项目名称');
                                 return;
                             }
@@ -167,8 +202,9 @@ class InitCommand extends Command {
                     choices: this.createTemplateChoices()
                 }
             ]);
-            projectInfo = { type,  ...project };
-        } else if (type === TYPE_COMPONENT) {}
+            projectInfo = { type, ...project };
+        } else if (type === TYPE_COMPONENT) {
+        }
         return projectInfo;
     }
 
@@ -185,8 +221,8 @@ class InitCommand extends Command {
     createTemplateChoices() {
         return this.template.map(item => ({
             value: item.npmName,
-            name: item.name,
-        }))
+            name: item.name
+        }));
     }
 }
 
