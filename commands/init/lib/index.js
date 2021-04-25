@@ -9,7 +9,7 @@ const userHome = require('user-home');
 const Command = require('@zjw-cli/command');
 const Package = require('@zjw-cli/package');
 const log = require('@zjw-cli/log');
-const { spinnerStart, sleep } = require('@zjw-cli/utils');
+const { spinnerStart, sleep, execAsync } = require('@zjw-cli/utils');
 
 const getProjectTemplate = require('./getProjectTemplate');
 
@@ -18,6 +18,8 @@ const TYPE_COMPONENT = 'component';
 
 const TEMPLATE_TYPE_NORMAL = 'normal';
 const TEMPLATE_TYPE_CUSTOM = 'custom';
+
+const WHITE_COMMAND = ['npm', 'yarn'];
 
 class InitCommand extends Command {
     init() {
@@ -64,9 +66,37 @@ class InitCommand extends Command {
         }
     }
 
+    // 检查需要执行的命令是否在白名单内
+    checkCommand(cmd) {
+        if (WHITE_COMMAND.includes(cmd)) {
+            return cmd;
+        }
+        return null;
+    }
+
+    async execCommand(command, errMsg) {
+        let ret;
+        if (command) {
+            const cmdArray = command.split(' ');
+            const cmd = this.checkCommand(cmdArray[0]);
+            if (!cmd) {
+                throw new Error('命令不存在！命令：' + command);
+            }
+            const args = cmdArray.slice(1);
+            ret = await execAsync(cmd, args, {
+                stdio: 'inherit',
+                cwd: process.cwd()
+            });
+        }
+        if (ret !== 0) {
+            throw new Error(errMsg);
+        }
+        return ret;
+    }
+
     async installNormalTemplate() {
         log.verbose('templateNpm', this.templateNpm);
-        console.log(this.templateNpm.cacheFilePath)
+        console.log(this.templateNpm.cacheFilePath);
         // 拷贝模板代码至当前目录
         const spinner = spinnerStart('正在安装模板...');
         await sleep();
@@ -82,6 +112,12 @@ class InitCommand extends Command {
             spinner.stop(true);
             log.success('模板安装成功');
         }
+
+        const { installCommand, startCommand } = this.templateInfo;
+        // 安装依赖
+        await this.execCommand(installCommand, '依赖安装失败！');
+        // 执行启动命令
+        await this.execCommand(startCommand, '启动执行命令失败！');
     }
 
     async installCustomTemplate() {

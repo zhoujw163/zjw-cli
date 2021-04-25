@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@zjw-cli/log": "file:../../utils/log",
-    "@zjw-cli/package": "file:../../models/package"
+    "@zjw-cli/package": "file:../../models/package",
+    "@zjw-cli/utils": "file:../../utils/utils"
   },
   "bugs": {
     "url": "https://github.com/zhoujw163/zjw-cli/issues"

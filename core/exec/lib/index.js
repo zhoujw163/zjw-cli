@@ -1,14 +1,13 @@
 'use strict';
 
-const cp = require('child_process');
 const path = require('path');
 const Package = require('@zjw-cli/package');
 const log = require('@zjw-cli/log');
+const { exec: spawn } = require('@zjw-cli/utils');
 
 // 手动维护一张配置表，根据命令获取 package name，也可以在服务端配置通过接口请求方式获取。
 const SETTINGS = {
     init: '@zjw-cli/init'
-    // init: '@imooc-cli/init'
 };
 
 const CACHE_DIR = 'dependencies';
@@ -90,16 +89,6 @@ async function exec() {
             log.error(err.message);
         }
     }
-}
-
-// 兼容 windows ，macos格式：cp.spawn('node', ['-e', code], options); windows: cp.spawn('cmd', ['/c', node', '-e', code], options);
-function spawn(command, args, options) {
-    const win32 = process.platform === 'win32';
-
-    const cmd = win32 ? 'cmd' : command;
-    const cmdArgs = win32 ? ['/c'].concat(command, args) : args;
-
-    return cp.spawn(cmd, cmdArgs, options || {});
 }
 
 module.exports = exec;
