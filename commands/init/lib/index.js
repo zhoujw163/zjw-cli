@@ -6,6 +6,8 @@ const inquirer = require('inquirer');
 const fse = require('fs-extra');
 const semver = require('semver');
 const userHome = require('user-home');
+const glob = require('glob');
+const ejs = require('ejs');
 const Command = require('@zjw-cli/command');
 const Package = require('@zjw-cli/package');
 const log = require('@zjw-cli/log');
@@ -43,6 +45,9 @@ class InitCommand extends Command {
             }
         } catch (e) {
             log.error(e.message);
+            if (process.env.LOG_LEVEL === 'verbose') {
+                console.log(e)
+            }
         }
     }
 
@@ -94,9 +99,43 @@ class InitCommand extends Command {
         return ret;
     }
 
+    // 动态渲染模板的 package.json
+    ejsRender(options) {
+        const dir = process.cwd();
+        return new Promise((resolve, reject) => {
+            require('glob')('**', {
+                cwd: dir,
+                ignore: options.ignore || '',
+                nodir: true
+            }, (err, files) => { 
+                if (err) {
+                    reject(err);
+                }
+                Promise.all(files.map(file => {
+                    const filePath = path.join(dir, file);
+                    return new Promise((resolve1, reject1) => {
+                        ejs.renderFile(filePath, this.projectInfo, (err, result) => {
+                            if (err) {
+                                reject1(err);
+                            } else {
+                                // 将 renderFile 处理后的文件内容替换原先的内容
+                                fse.writeFileSync(filePath, result);
+                                resolve1(result)
+                            }
+                        })
+                    });
+
+                }))
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch(err => reject(err))
+            })
+        });
+    }
+
     async installNormalTemplate() {
         log.verbose('templateNpm', this.templateNpm);
-        console.log(this.templateNpm.cacheFilePath);
         // 拷贝模板代码至当前目录
         const spinner = spinnerStart('正在安装模板...');
         await sleep();
@@ -112,7 +151,8 @@ class InitCommand extends Command {
             spinner.stop(true);
             log.success('模板安装成功');
         }
-
+        const ignore = ['node_modules/**', 'public/**']
+        await this.ejsRender({ ignore })
         const { installCommand, startCommand } = this.templateInfo;
         // 安装依赖
         await this.execCommand(installCommand, '依赖安装失败！');
@@ -212,9 +252,21 @@ class InitCommand extends Command {
         return this.getProjectInfo();
     }
 
+    
+
     // 获取项目基本信息
     async getProjectInfo() {
+        // 校验项目名称是否合法
+        function isValidate(v) {
+            return /^[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(v);
+        }
         let projectInfo = {};
+        let isProjectNameValid = false;
+        const projectPrompt = [];
+        if (isValidate(this.projectName)) {
+            isProjectNameValid = true;
+            projectInfo.projectName = this.projectName
+        }
         // 1. 选择创建项目或组件
         const { type } = await inquirer.prompt({
             type: 'list',
@@ -233,67 +285,74 @@ class InitCommand extends Command {
             ]
         });
         log.verbose('type', type);
+        const projectNamePrompt = {
+            type: 'input',
+            name: 'projectName',
+            message: '请输入项目名称',
+            default: '',
+            validate: function (v) {
+                const done = this.async();
+                setTimeout(function () {
+                    // 1.首字符必须为英文字符
+                    // 2.尾字符必须为英文或数字，不能为字符
+                    // 3.字符仅允许"-_"
+                    if (!isValidate(v)) {
+                        done('请输入合法的项目名称');
+                        return;
+                    }
+                    done(null, true);
+                }, 0);
+            },
+            filter: function (v) {
+                return v;
+            }
+        };
         if (type === TYPE_PROJECT) {
-            // 2. 获取项目的基本信息
-            const project = await inquirer.prompt([
-                {
-                    type: 'input',
-                    name: 'projectName',
-                    message: '请输入项目名称',
-                    default: '',
-                    validate: function (v) {
-                        const done = this.async();
-                        setTimeout(function () {
-                            // 1.首字符必须为英文字符
-                            // 2.尾字符必须为英文或数字，不能为字符
-                            // 3.字符仅允许"-_"
-                            if (
-                                !/^[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(
-                                    v
-                                )
-                            ) {
-                                done('请输入合法的项目名称');
-                                return;
-                            }
-                            done(null, true);
-                        }, 0);
-                    },
-                    filter: function (v) {
+            if (isProjectNameValid) {
+                projectPrompt.push(projectNamePrompt);
+            }
+            projectPrompt.push({
+                type: 'input',
+                name: 'projectVersion',
+                message: '请输入项目版本号',
+                default: '1.0.0',
+                validate: function (v) {
+                    const done = this.async();
+                    setTimeout(function () {
+                        if (!!!semver.valid(v)) {
+                            done('请输入合法的版本号');
+                            return;
+                        }
+                        done(null, true);
+                    }, 0);
+                },
+                filter: function (v) {
+                    if (!!semver.valid(v)) {
+                        return semver.valid(v);
+                    } else {
                         return v;
                     }
-                },
-                {
-                    type: 'input',
-                    name: 'projectVersion',
-                    message: '请输入项目版本号',
-                    default: '1.0.0',
-                    validate: function (v) {
-                        const done = this.async();
-                        setTimeout(function () {
-                            if (!!!semver.valid(v)) {
-                                done('请输入合法的版本号');
-                                return;
-                            }
-                            done(null, true);
-                        }, 0);
-                    },
-                    filter: function (v) {
-                        if (!!semver.valid(v)) {
-                            return semver.valid(v);
-                        } else {
-                            return v;
-                        }
-                    }
-                },
-                {
-                    type: 'list',
-                    name: 'projectTemplate',
-                    message: '请选择项目模板',
-                    choices: this.createTemplateChoices()
                 }
-            ]);
-            projectInfo = { type, ...project };
+            },
+            {
+                type: 'list',
+                name: 'projectTemplate',
+                message: '请选择项目模板',
+                choices: this.createTemplateChoices()
+            })
+            
+            // 2. 获取项目的基本信息
+            const project = await inquirer.prompt(projectPrompt);
+            projectInfo = { ...projectInfo, type, ...project };
         } else if (type === TYPE_COMPONENT) {
+        }
+        // AbcEf => abc-ef
+        if (projectInfo.projectName) {
+            projectInfo.name = projectInfo.projectName;
+            projectInfo.className = require('kebab-case')(projectInfo.projectName).replace(/^-/, '');
+        }
+        if (projectInfo.projectVersion) {
+            projectInfo.version = projectInfo.projectVersion
         }
         return projectInfo;
     }

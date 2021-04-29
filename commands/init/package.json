@@ -29,8 +29,11 @@
     "@zjw-cli/package": "file:../../models/package",
     "@zjw-cli/request": "file:../../utils/request",
     "@zjw-cli/utils": "file:../../utils/utils",
+    "ejs": "^3.1.6",
     "fs-extra": "^9.0.1",
+    "glob": "^7.1.6",
     "inquirer": "^7.3.3",
+    "kebab-case": "^1.0.1",
     "semver": "^7.3.4",
     "spinner": "^0.3.4",
     "user-home": "^2.0.0"
